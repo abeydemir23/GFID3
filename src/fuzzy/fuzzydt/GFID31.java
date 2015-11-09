@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author Mohammed
  */
-public class GFID3 {
+public class GFID31 {
     
     private double truthLevel;
 
@@ -27,12 +27,12 @@ public class GFID3 {
     
     private MappingFunction mappingFunction;
     
-    public GFID3(double alpha) {
+    public GFID31(double alpha) {
         this.truthLevel = alpha;
         mappingFunction = new MappingFunction();
     }
 
-    public GFID3(double truthLevel, MappingFunction mappingFunction) {
+    public GFID31(double truthLevel, MappingFunction mappingFunction) {
         this.truthLevel = truthLevel;
         this.mappingFunction = mappingFunction;
     }
@@ -286,14 +286,8 @@ public class GFID3 {
                 mijk[j++] = Utils.sum(vals2);
             }
             
-            double mijPrime = Utils.sum(mijk);
-            double hgda = Utils.ln(Utils.sum(vals));
             Utils.normalizeWith(mijk, Utils.sum(mijk));
-            double entropy = 0;
-            for(int k = 0; k < mijk.length; k++) {
-                entropy += ((mijk[k] / mijPrime) * (Utils.ln(mijk[k]) - hgda));
-            }
-            entropies[i++] = -entropy;
+            entropies[i++] = Utils.entropy(mijk);
         }
         Utils.normalizeWith(mij, Utils.sum(mij));
         double s = 0;
@@ -334,7 +328,6 @@ public class GFID3 {
             
             double [] mijk = new double[classTerms.size()];
             int j = 0;
-            double h[] = new double[classTerms.size()];
             for(String ck : classTerms) {
                 double [] vals2 = dataset.getAttribute(className).getFuzzyValues(ck);
                 vals2 = mappingFunction.map(vals2);
@@ -342,14 +335,9 @@ public class GFID3 {
                 
                 mijk[j++] = Utils.sum(vals2);
             }
-            double mijPrime = Utils.sum(mijk);
-            double hgda = Utils.ln(Utils.sum(vals));
+            
             Utils.normalizeWith(mijk, Utils.sum(mijk));
-            double entropy = 0;
-            for(int k = 0; k < mijk.length; k++) {
-                entropy += ((mijk[k] / mijPrime) * (Utils.ln(mijk[k]) - hgda));
-            }
-            entropies[i++] = -entropy;
+            entropies[i++] = Utils.entropy(mijk);
         }
         Utils.normalizeWith(mij, Utils.sum(mij));
         double s = 0;
