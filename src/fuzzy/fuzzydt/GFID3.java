@@ -186,7 +186,7 @@ public class GFID3 {
                         for (String classTerm : classTerms) {
                             args2[args2.length - 1] = classTerm;
                             double dot = degreeOfClassificationTruth(dataset, args2);
-                            if (dot > this.truthLevel) {
+                            if (dot >= this.truthLevel) {
                                 TreeNode c = new TreeNode(NodeType.VALUE, term);
                                 TreeNode c2 = new TreeNode(NodeType.LEAF, classTerm);
                                 c2.setValue(dot);
@@ -286,14 +286,8 @@ public class GFID3 {
                 mijk[j++] = Utils.sum(vals2);
             }
             
-            double mijPrime = Utils.sum(mijk);
-            double hgda = Utils.ln(Utils.sum(vals));
             Utils.normalizeWith(mijk, Utils.sum(mijk));
-            double entropy = 0;
-            for(int k = 0; k < mijk.length; k++) {
-                entropy += ((mijk[k] / mijPrime) * (Utils.ln(mijk[k]) - hgda));
-            }
-            entropies[i++] = -entropy;
+            entropies[i++] = Utils.entropy(mijk);
         }
         Utils.normalizeWith(mij, Utils.sum(mij));
         double s = 0;
@@ -312,11 +306,11 @@ public class GFID3 {
         for(int i = 0; i < evidence.length - 1; i += 2) {
             if(a == null) {
                 a = dataset.getAttribute(evidence[i]).getFuzzyValues(evidence[i + 1]);
-                a = mappingFunction.map(a);
+                //a = mappingFunction.map(a);
             }
             else {
                 double [] aPrime = dataset.getAttribute(evidence[i]).getFuzzyValues(evidence[i + 1]);
-                aPrime = mappingFunction.map(aPrime);
+                //aPrime = mappingFunction.map(aPrime);
                 for(int j = 0; j < aPrime.length; j++) {
                     a[j] = Math.min(a[j], aPrime[j]);
                 }
@@ -328,8 +322,9 @@ public class GFID3 {
         int i = 0;
         for(String term : terms) {
             double [] vals = dataset.getAttribute(attrName).getFuzzyValues(term);
-            vals = mappingFunction.map(vals);
+            //
             vals = Utils.min(a, vals);
+            vals = mappingFunction.map(vals);
             mij[i] = Utils.sum(vals);
             
             double [] mijk = new double[classTerms.size()];
@@ -337,17 +332,17 @@ public class GFID3 {
             double h[] = new double[classTerms.size()];
             for(String ck : classTerms) {
                 double [] vals2 = dataset.getAttribute(className).getFuzzyValues(ck);
-                vals2 = mappingFunction.map(vals2);
+                //vals2 = mappingFunction.map(vals2);
                 vals2 = Utils.min(vals, vals2);
                 
                 mijk[j++] = Utils.sum(vals2);
             }
             double mijPrime = Utils.sum(mijk);
-            double hgda = Utils.ln(Utils.sum(vals));
-            Utils.normalizeWith(mijk, Utils.sum(mijk));
+            double hgda = Utils.ln(mappingFunction.map(mij[i]));
+            //Utils.normalizeWith(mijk, Utils.sum(mijk));
             double entropy = 0;
             for(int k = 0; k < mijk.length; k++) {
-                entropy += ((mijk[k] / mijPrime) * (Utils.ln(mijk[k]) - hgda));
+                entropy += ((mijk[k] / mijPrime) * (Utils.ln(mappingFunction.map(mijk[k])) - hgda));
             }
             entropies[i++] = -entropy;
         }
