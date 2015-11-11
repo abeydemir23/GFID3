@@ -56,7 +56,7 @@ public class Test2 {
         
         br.close();
         
-        GFID3 gfid3 = new GFID3(0.8, new MappingFunction());
+        GFID3 gfid3 = new GFID3(0.8, new QuadraticMappingFunction());
         
         TreeNode root = gfid3.buildTree(d, "Plan");
         

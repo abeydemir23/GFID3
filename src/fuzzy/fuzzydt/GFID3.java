@@ -274,16 +274,16 @@ public class GFID3 {
         int i = 0;
         for(String term : terms) {
             double [] vals = dataset.getAttribute(attrName).getFuzzyValues(term);
-            vals = mappingFunction.map(vals);
-            mij[i] = Utils.sum(vals);
+            //vals = mappingFunction.map(vals);
+            mij[i] = Utils.sum(mappingFunction.map(vals));
             
             double [] mijk = new double[classTerms.size()];
             int j = 0;
             for(String ck : classTerms) {
                 double [] vals2 = dataset.getAttribute(className).getFuzzyValues(ck);
-                vals2 = mappingFunction.map(vals2);
+                //vals2 = mappingFunction.map(vals2);
                 vals2 = Utils.min(vals, vals2);
-                mijk[j++] = Utils.sum(vals2);
+                mijk[j++] = Utils.sum(mappingFunction.map(vals2));
             }
             
             Utils.normalizeWith(mijk, Utils.sum(mijk));
@@ -306,11 +306,9 @@ public class GFID3 {
         for(int i = 0; i < evidence.length - 1; i += 2) {
             if(a == null) {
                 a = dataset.getAttribute(evidence[i]).getFuzzyValues(evidence[i + 1]);
-                //a = mappingFunction.map(a);
             }
             else {
                 double [] aPrime = dataset.getAttribute(evidence[i]).getFuzzyValues(evidence[i + 1]);
-                //aPrime = mappingFunction.map(aPrime);
                 for(int j = 0; j < aPrime.length; j++) {
                     a[j] = Math.min(a[j], aPrime[j]);
                 }
@@ -324,8 +322,8 @@ public class GFID3 {
             double [] vals = dataset.getAttribute(attrName).getFuzzyValues(term);
             //
             vals = Utils.min(a, vals);
-            vals = mappingFunction.map(vals);
-            mij[i] = Utils.sum(vals);
+            //vals = mappingFunction.map(vals);
+            mij[i] = Utils.sum(mappingFunction.map(vals));
             
             double [] mijk = new double[classTerms.size()];
             int j = 0;
@@ -335,7 +333,7 @@ public class GFID3 {
                 //vals2 = mappingFunction.map(vals2);
                 vals2 = Utils.min(vals, vals2);
                 
-                mijk[j++] = Utils.sum(vals2);
+                mijk[j++] = Utils.sum(mappingFunction.map(vals2));
             }
             double mijPrime = Utils.sum(mijk);
             double hgda = Utils.ln(mappingFunction.map(mij[i]));
@@ -363,18 +361,18 @@ public class GFID3 {
         }
         
         double [] a = dataset.getAttribute(args[0]).getFuzzyValues(args[1]); 
-        a = mappingFunction.map(a);
+        
         int n = a.length;
         
         for(int i = 0; i < n; i++) {
             for(int j = 2; j < args.length - 2; j += 2) {
-                double v = mappingFunction.map(dataset.getAttribute(args[j]).getFuzzyValue(i, args[j + 1])); 
+                double v = dataset.getAttribute(args[j]).getFuzzyValue(i, args[j + 1]); 
                 
                 a[i] = Math.min(v, a[i]);
             }
         }
         double[] b = dataset.getAttribute(args[args.length - 2]).getFuzzyValues(args[args.length - 1]);      
-        return Utils.subSetHood(a, b);
+        return Utils.subSetHood(mappingFunction.map(a), mappingFunction.map(b));
     } 
     
     public void printTree(TreeNode root, String tabs) {
